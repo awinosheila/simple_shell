@@ -68,4 +68,7 @@ void _eputs(char *);
 int _eputchar(char);
 int err_atoi(char *);
 void print_error(file_t*, char *);
+int _strlen(char *s);
+int _strcmp(char *s1, char *s2);
+char *_strstr(char *haystack, char *needle);
 #endif
