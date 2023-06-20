@@ -37,13 +37,14 @@ int err_a_to_i(char *s)
 		{
 			final *= 10;
 			final += (s[a] - '0');
-			if (result > INT_MAX)
+			if (final > INT_MAX)
 				return (-1);
 		}
 		else
 			return (-1);
 	}
-	return (result);
+
+	return (final);
 }
 
 /**
@@ -57,7 +58,7 @@ void print_error(file_t *file, char *estr)
 {
 	_eputs(file->fname);
 	_eputs(": ");
-	print_d(file->line_count, STDERR_FILENO);
+	print_deci(file->line_count, STDERR_FILENO);
 	_eputs(": ");
 	_eputs(file->argv[0]);
 	_eputs(": ");
@@ -80,7 +81,7 @@ char *convert_atoi(long int num, int base, int no)
 	char *ptr;
 	unsigned long a = num;
 
-	if (!(flags & CONVERT_UNSIGNED) && num < 0)
+	if (!(yes & CONVERT_UNSIGNED) && num < 0)
 	{
 		a = -num;
 		yes = '-';
@@ -91,13 +92,13 @@ char *convert_atoi(long int num, int base, int no)
 	*ptr = '\0';
 
 	do      {
-		--ptr = array[n % base];
+		--ptr = array[a % base];
 		a /= base;
 	}
 
 	while (a != 0);
 
-	if (sign)
+	if (yes)
 		*--ptr = yes;
 	return (ptr);
 }
@@ -117,20 +118,20 @@ int print_deci(int value, int fd)
 
 	if (fd == STDERR_FILENO)
 		__putchar = _eputchar;
-	if (input < 0)
+	if (value < 0)
 	{
-		_abs_ = -input;
+		_abs_ = -value;
 		__putchar('-');
 		count++;
 	}
 	else
-		_abs_ = input;
-	current = _abs_;
+		_abs_ = value;
+	new = _abs_;
 	for (a = 1000000000; a > 1; a /= 10)
 	{
 		if (_abs_ / a)
 		{
-			__putchar('0' + current / a);
+			__putchar('0' + new / a);
 			count++;
 		}
 		new %= a;

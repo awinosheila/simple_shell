@@ -14,7 +14,7 @@ int _eputchar(char c)
 
 	if (c == BUF_FLUSH || a >= WRITE_BUF_SIZE)
 	{
-		write(2, buf, i);
+		write(2, buf, a);
 		a = 0;
 	}
 	if (c != BUF_FLUSH)
@@ -36,8 +36,8 @@ void _eputs(char *str)
 		return;
 	while (str[a] != '\0')
 	{
-		_eputchar(str[a])
-			a++;
+		_eputchar(str[a]);
+		a++;
 	}
 }
 
@@ -56,9 +56,9 @@ int _putsfd(char *str, int fd)
 		return (0);
 	while (*str)
 	{
-		a += _putfd(*str++, fd);
+		a += _putsfd(*str++, fd);
 	}
-	return (i);
+	return (a);
 }
 
 /**

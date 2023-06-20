@@ -42,6 +42,14 @@ extern char **environ;
  * @filed_t: file with arguments
  * @file_t another file
  * @status: return value of the last executed command
+ * @env: copy of environment on the linked lists
+ * @environ: modified environment
+ * @line_count: the line count error
+ * @err_num: the error code to check for exit
+ * @fname: filename
+ * @readfd: the file descriptor to read from
+ * @arg: a string generated from getline arguments
+ * @argv:an array of strings generated from arguments
  */
 
 typedef struct passfile
@@ -53,7 +61,31 @@ typedef struct passfile
         int argc;
 	int status;
 	int readfd;
+	list_t *env;
+	char *fname;
+	int err_num;
+	unsigned int line_count;
+	char **environ;
+
 } file_t;
+
+#define FILE_INIT \
+{NULL, NULL, NULL, 0, 0, 0, 0, NULL, NULL, NULL, NULL, NULL, 0, 0, NULL, \
+		0, 0, 0}
+
+
+/**
+ * struct liststr - singly linked list
+ * @num: the number field
+ * @str: a string
+ * @next: points to the next node
+ */
+typedef struct liststr
+{
+	int num;
+	char *str;
+	struct liststr *next;
+} list_t;
 
 #define file_INIT \
 {NULL, NULL, NULL, 0, 0, 0, 0, NULL, NULL, NULL, NULL, NULL, 0, 0, NULL, \
@@ -71,4 +103,23 @@ void print_error(file_t*, char *);
 int _strlen(char *s);
 int _strcmp(char *s1, char *s2);
 char *_strstr(char *haystack, char *needle);
+int _new_env(file_t *);
+int populate_env_list(file_t *);
+int _rm_env(file_t *);
+char *_getval_env(file_t *, const char *);
+int env_builtin(file_t *);
+list_t *add_node_last(list_t **, const char *, int);
+size_t print_list_str(const list_t *);
+char *starts_with(const char *, const char *);
+size_t list_len(const list_t *);
+size_t list_len(const list_t *);
+void print_error(file_t *file, char *estr);
+int err_a_to_i(char *s);
+char *convert_atoi(long int num, int base, int no);
+void rm_comments(char *buf);
+int print_deci(int value, int fd);
+int _putfd(char c, int fd);
+int _putsfd(char *str, int fd);
+void free_list(list_t **);
+
 #endif
