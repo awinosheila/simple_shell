@@ -50,6 +50,14 @@ extern char **environ;
  * @readfd: the file descriptor to read from
  * @arg: a string generated from getline arguments
  * @argv:an array of strings generated from arguments
+ * @cmd_buf: address of pointer to cmd_buff
+ * @cmd_buf_type: cmd type
+ * @build_history_list: command to built a hstory list
+ * @_realloc: function call
+ * @_strncat: function call
+ * @_strncpy: function call to copy string
+ * @check_chain: checks the chain arguments
+ * @_strchr: changes strings
  */
 
 typedef struct passfile
@@ -61,11 +69,14 @@ typedef struct passfile
         int argc;
 	int status;
 	int readfd;
-	list_t *env;
+	char *env;
 	char *fname;
 	int err_num;
 	unsigned int line_count;
 	char **environ;
+	int histcount;
+	int cmd_buf_type;
+	char **cmd_buf;
 
 } file_t;
 
@@ -80,7 +91,7 @@ typedef struct passfile
  * @str: a string
  * @next: points to the next node
  */
-typedef struct liststr
+typedef struct list_t
 {
 	int num;
 	char *str;
@@ -121,5 +132,12 @@ int print_deci(int value, int fd);
 int _putfd(char c, int fd);
 int _putsfd(char *str, int fd);
 void free_list(list_t **);
+ssize_t read_buffer(file_t *file, char *buff, size_t *a);
+ssize_t value_buff(file_t *file, char **buff, size_t *len_add);
+ssize_t get_value(file_t *file);
+ssize_t read_buffer(file_t *file, char *buff, size_t *a);
+int _get_new(file_t *file, char **ptr, size_t *len);
+void blockcontroc(__attribute__((unused))int sig_num);
+int freed(void **ptr);
 
 #endif
