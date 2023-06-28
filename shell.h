@@ -48,6 +48,14 @@ typedef struct info
         char **alias_list;
 } data_of_program;
 
+typedef struct builtin
+{
+	char *env_get_key;
+	int env_set_key;
+	char print_environ;
+	char *str_duplicate;
+	int env_remove_key;
+} builtin_more;
 
 extern char **environ;
 /*
@@ -56,6 +64,12 @@ extern char **environ;
  * @filed_t: file with arguments
  * @file_t another file
  * @status: return value of the last executed command
+ * @env_get_key:command to get the environment key
+ * @env_set_key: to set the environment key
+ * @print_environ: prints the current environment
+ * @str_duplicate: duplicates a string
+ * env_remove_key: removes the environment key
+ * @_print: print
  */
 
 typedef struct liststr
@@ -146,9 +160,9 @@ int env_set_key(char *key, char *value, data_of_program *data);
 int _print(char *string);
 int env_remove_key(char *key, data_of_program *data);
 int main(int ac, char **av);
-char *_getenv(file_t *, const char *);
-int _myenv(file_t *);
-int _myunsetenv(file_t *);
-int populate_env_list(file_t *);
-
+int current_env(file_t *file);
+char *value_env(file_t *file, const char *name);
+int new_env(file_t *file);
+int rm_env(file_t *file);
+int occupy_env(file_t *file);
 #endif
