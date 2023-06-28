@@ -30,7 +30,7 @@ char **_copyenviron(void)
 			free(new_environ);
 			return (NULL);
 		}
-		_strcpy(new_environ[index], environ[index]);
+		strcpy(new_environ[index], environ[index]);
 	}
 	new_environ[index] = NULL;
 
@@ -63,7 +63,7 @@ char **_getenviron(const char *var)
 	len = _strlen(var);
 	for (index = 0; environ[index]; index++)
 	{
-		if (_strncmp(var, environ[index], len) == 0)
+		if (_strcmp(var, environ[index], len) == 0)
 			return (&environ[index]);
 	}
 

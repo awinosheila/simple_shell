@@ -127,40 +127,41 @@ int build_location_list(file_t *file, char *buf, int linecount)
  * @file: Structure containing potential arguments. Used to maintain
  *
  * Return: the new locatecount
- */ if (!filename)
-                return (0);
+ */
+if (!filename)
+	return (0);
 
-        fd = open(filename, O_RDONLY);
-        free(filename);
-        if (fd == -1)
-                return (0);
-        if (!fstat(fd, &st))
-                fsize = st.st_size;
-        if (fsize < 2)
-                return (0);
-        buf = malloc(sizeof(char) * (fsize + 1));
-        if (!buf)
-                return (0);
-        rdlen = read(fd, buf, fsize);
-        buf[fsize] = 0;
-        if (rdlen <= 0)
-                return (free(buf), 0);
-        close(fd);
-        for (i = 0; i < fsize; i++)
-                if (buf[i] == '\n')
-                {
-                        buf[i] = 0;
-                        build_location_list(file, buf + last, linecount++);
-                        last = i + 1;
-                }
-        if (last != i)
-                build_location_list(info, buf + last, linecount++);
-        free(buf);
-        file->locatecount = linecount;
-        while (file->locatecount-- >= LOCATE_MAX)
-                delete_node_at_index(&(file->location), 0);
-        renumber_location(file);
-        return (file->locatecount);
+	fd = open(filename, O_RDONLY);
+	free(filename);
+if (fd == -1)
+	return (0);
+if (!fstat(fd, &st))
+	fsize = st.st_size;
+if (fsize < 2)
+	return (0);
+	buf = malloc(sizeof(char) * (fsize + 1));
+if (!buf)
+	return (0);
+	rdlen = read(fd, buf, fsize);
+	buf[fsize] = 0;
+if (rdlen <= 0)
+	return (free(buf), 0);
+	close(fd);
+	for (i = 0; i < fsize; i++)
+	if (buf[i] == '\n')
+{
+	buf[i] = 0;
+	build_location_list(file, buf + last, linecount++);
+	last = i + 1;
+}
+if (last != i)
+	build_location_list(info, buf + last, linecount++);
+	free(buf);
+	file->locatecount = linecount;
+while (file->locatecount-- >= LOCATE_MAX)
+	delete_node_at_index(&(file->location), 0);
+	renumber_location(file);
+	return (file->locatecount);
 int renumber_location(file_t *file)
 {
 	list_t *node = file->location;

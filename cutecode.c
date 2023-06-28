@@ -73,5 +73,5 @@ int a_to_i(char *s)
 
 int is_interactive(file_t *filed)
 {
-        return (isatty(STDIN_FILENO) && filed->readfd <= 2);
+	return (isatty(STDIN_FILENO) && filed->readfd <= 2);
 }

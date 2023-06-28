@@ -7,21 +7,21 @@
 #define BUF_FLUSH -1
 
 /* for command chaining */
-#define CMD_NORM	0
-#define CMD_OR		1
-#define CMD_AND		2
-#define CMD_CHAIN	3
+#define CMD_NORM        0
+#define CMD_OR          1
+#define CMD_AND         2
+#define CMD_CHAIN       3
 
 /* 1 if using system getline() */
 #define USE_GETLINE 0
 #define USE_STRTOK 0
 
-#define HIST_FILE	".simple_shell_history"
-#define HIST_MAX	4096
+#define HIST_FILE       ".simple_shell_history"
+#define HIST_MAX        4096
 
 /*to convert numbers*/
-#define CONVERT_LOWERCASE	1
-#define CONVERT_UNSIGNED	2
+#define CONVERT_LOWERCASE       1
+#define CONVERT_UNSIGNED        2
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -35,7 +35,19 @@
 #include <sys/stat.h>
 #include <signal.h>
 #include <stddef.h>
- 
+
+typedef struct info
+{
+        char *program_name;
+        char *input_line;
+        char *command_name;
+        int exec_counter;
+        int file_descriptor;
+        char **tokens;
+        char **env;
+        char **alias_list;
+} data_of_program;
+
 
 extern char **environ;
 /*
@@ -44,74 +56,62 @@ extern char **environ;
  * @filed_t: file with arguments
  * @file_t another file
  * @status: return value of the last executed command
- * @env: copy of environment on the linked lists
- * @environ: modified environment
- * @line_count: the line count error
- * @err_num: the error code to check for exit
- * @fname: filename
- * @readfd: the file descriptor to read from
- * @arg: a string generated from getline arguments
- * @argv:an array of strings generated from arguments
- * @cmd_buf: address of pointer to cmd_buff
- * @cmd_buf_type: cmd type
- * @build_history_list: command to built a hstory list
- * @_realloc: function call
- * @_strncat: function call
- * @_strncpy: function call to copy string
- * @check_chain: checks the chain arguments
- * @_strchr: changes strings
  */
 
-/*======== builtin_more.c ========*/
-
-/* prints the current environ */
-void print_environ(data_of_program *data);
+typedef struct liststr
+{
+        int num;
+        char *str;
+        struct liststr *next;
+} list_t;
 
 typedef struct passfile
 {
-        int err_no;
-        char *arg;
-        char **argv;
-        char path;
+	char *arg;
+	char **argv;
+        char *path;
         int argc;
-	int status;
-	int readfd;
-<<<<<<< HEAD
-	int (*function)(data_of_program *data);
-=======
-	char *env;
-	char *fname;
-	int err_num;
 	unsigned int line_count;
-	char **environ;
-	int histcount;
-	int cmd_buf_type;
-	char **cmd_buf;
+        int err_num;
+        int linecount_flag;
+        char *fname;
+        char **environ;
+        int env_changed;
+        int status;
+        list_t *env;
+        list_t *history;
+        list_t *alias;
 
->>>>>>> cbefc3ce31194922ebde1531ea8927a524a3b004
+        char **cmd_buf;
+        int cmd_buf_type;
+        int readfd;
+        int histcount;
 } file_t;
 
-#define FILE_INIT \
-{NULL, NULL, NULL, 0, 0, 0, 0, NULL, NULL, NULL, NULL, NULL, 0, 0, NULL, \
-		0, 0, 0}
+/* toem_string.c */
+int _strlen(char *);
+int _strcmp(char *, char *);
+char *starts_with(const char *, const char *);
+char *_strcat(char *, char *);
 
+/* loophsh.c */
+int loophsh(char **);
 
-/**
- * struct liststr - singly linked list
- * @num: the number field
- * @str: a string
- * @next: points to the next node
- */
-typedef struct list_t
-{
-	int num;
-	char *str;
-	struct liststr *next;
-} list_t;
+/* toem_lists.c */
+list_t *add_node(list_t **, const char *, int);
+list_t *add_node_end(list_t **, const char *, int);
+size_t print_list_str(const list_t *);
+int delete_node_at_index(list_t **, unsigned int);
+void free_list(list_t **);
 
-#define file_INIT \
-{NULL, NULL, NULL, 0, 0, 0, 0, NULL, NULL, NULL, NULL, NULL, 0, 0, NULL, \
-		0, 0, 0}
+/* toem_lists1.c */
+size_t list_len(const list_t *);
+char **list_to_strings(list_t *);
+size_t print_list(const list_t *);
+list_t *node_starts_with(list_t *, char *, char);
+ssize_t get_node_index(list_t *, list_t *);
+
+#define FILE_INIT {0, NULL, NULL, NULL, 0, 0, 0, 0}
 
 int is_interactive(file_t *filed);
 int _delimeter(char c, char *delimeter);
@@ -125,7 +125,6 @@ void print_error(file_t*, char *);
 int _strlen(char *s);
 int _strcmp(char *s1, char *s2);
 char *_strstr(char *haystack, char *needle);
-<<<<<<< HEAD
 int builtin_locate(data_of_program *data);
 int builtin_set_locate(data_of_program *data);
 int builtin_unset_locate(data_of_program *data);
@@ -140,32 +139,16 @@ int renumber_location(file_t *file);
 void *_realloc(void *p, unsigned int o, unsigned int n);
 void assign_lineptr(char **lineptr, size_t *n, char *buffer, size_t b);
 ssize_t _getline(char **lineptr, size_t *n, FILE *stream);
-=======
-int _new_env(file_t *);
+void print_environ(data_of_program *data);
+char *str_duplicate(char *string);
+char *env_get_key(char *name, data_of_program *data);
+int env_set_key(char *key, char *value, data_of_program *data);
+int _print(char *string);
+int env_remove_key(char *key, data_of_program *data);
+int main(int ac, char **av);
+char *_getenv(file_t *, const char *);
+int _myenv(file_t *);
+int _myunsetenv(file_t *);
 int populate_env_list(file_t *);
-int _rm_env(file_t *);
-char *_getval_env(file_t *, const char *);
-int env_builtin(file_t *);
-list_t *add_node_last(list_t **, const char *, int);
-size_t print_list_str(const list_t *);
-char *starts_with(const char *, const char *);
-size_t list_len(const list_t *);
-size_t list_len(const list_t *);
-void print_error(file_t *file, char *estr);
-int err_a_to_i(char *s);
-char *convert_atoi(long int num, int base, int no);
-void rm_comments(char *buf);
-int print_deci(int value, int fd);
-int _putfd(char c, int fd);
-int _putsfd(char *str, int fd);
-void free_list(list_t **);
-ssize_t read_buffer(file_t *file, char *buff, size_t *a);
-ssize_t value_buff(file_t *file, char **buff, size_t *len_add);
-ssize_t get_value(file_t *file);
-ssize_t read_buffer(file_t *file, char *buff, size_t *a);
-int _get_new(file_t *file, char **ptr, size_t *len);
-void blockcontroc(__attribute__((unused))int sig_num);
-int freed(void **ptr);
 
->>>>>>> cbefc3ce31194922ebde1531ea8927a524a3b004
 #endif
