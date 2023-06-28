@@ -33,6 +33,8 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/stat.h>
+#include <signal.h>
+#include <stddef.h>
  
 
 extern char **environ;
@@ -44,6 +46,11 @@ extern char **environ;
  * @status: return value of the last executed command
  */
 
+/*======== builtin_more.c ========*/
+
+/* prints the current environ */
+void print_environ(data_of_program *data);
+
 typedef struct passfile
 {
         int err_no;
@@ -53,6 +60,7 @@ typedef struct passfile
         int argc;
 	int status;
 	int readfd;
+	int (*function)(data_of_program *data);
 } file_t;
 
 #define file_INIT \
@@ -71,4 +79,18 @@ void print_error(file_t*, char *);
 int _strlen(char *s);
 int _strcmp(char *s1, char *s2);
 char *_strstr(char *haystack, char *needle);
+int builtin_locate(data_of_program *data);
+int builtin_set_locate(data_of_program *data);
+int builtin_unset_locate(data_of_program *data);
+char **_copyenviron(void);
+void free_environ(void);
+char **_getenviron(const char *var);
+char *get_location_file(file_t *file);
+int write_location(file_t *file);
+int read_location(file_t *file);
+int build_location_list(file_t *file, char *buf, int linecount);
+int renumber_location(file_t *file);
+void *_realloc(void *p, unsigned int o, unsigned int n);
+void assign_lineptr(char **lineptr, size_t *n, char *buffer, size_t b);
+ssize_t _getline(char **lineptr, size_t *n, FILE *stream);
 #endif
